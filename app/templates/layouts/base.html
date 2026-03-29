@@ -6,15 +6,14 @@
     <title>{% block title %}Sinerg.IA Conversor{% endblock %}</title>
     
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </head>
 <body>
 
     {% include 'components/_sidebar.html' %}
 
     <main class="content" id="main-content">
-        
-    
-
         {% block content %}{% endblock %}
     </main>
 

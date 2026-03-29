@@ -2,8 +2,6 @@ from PIL import Image
 import os
 import fitz  # PyMuPDF
 
-# REMOVA qualquer linha que tente importar ImageProcessor ou PDFProcessor aqui!
-
 class ImageProcessor:
     @staticmethod
     def compress_image(input_path, output_path, quality=70):
@@ -32,21 +30,40 @@ class PDFProcessor:
 
     @staticmethod
     def pdf_to_html_edit(pdf_path):
-        """Desconstrói o PDF para exibição editável no ZAPT."""
+        """Desconstrói o PDF para exibição editável organizada por páginas."""
         doc = fitz.open(pdf_path)
         html_pages = ""
         
-        for page in doc:
-            page_html = '<div class="pdf-page-canvas">'
+        for page_num, page in enumerate(doc):
+            # Obtemos as dimensões da página para o contêiner
+            width = page.rect.width
+            height = page.rect.height
+            
+            # Cada página ganha um ID único e posição relativa
+            # margin-bottom e border ajudam a separar visualmente as páginas na tela
+            page_html = (
+                f'<div class="pdf-page-canvas" id="page-{page_num}" style="'
+                f'position: relative; '
+                f'width: {width}px; '
+                f'height: {height}px; '
+                f'background: white; '
+                f'margin: 20px auto; '
+                f'border: 1px solid #ccc; '
+                f'box-shadow: 0 4px 8px rgba(0,0,0,0.1);">'
+            )
+            
             blocks = page.get_text("dict")["blocks"]
             
             for b in blocks:
                 if "lines" in b:
                     for l in b["lines"]:
                         for s in l["spans"]:
+                            # Tratamento de cores
                             color_hex = hex(s['color'])[2:].zfill(6)
-                            if color_hex == "ffffff": color_hex = "333333"
+                            if color_hex == "ffffff": 
+                                color_hex = "333333" # Garante que texto branco não suma no fundo branco
                             
+                            # O segredo: os 'tops' e 'lefts' agora são relativos à DIV pai (page-canvas)
                             style = (
                                 f"position: absolute; "
                                 f"left: {s['origin'][0]}px; "
@@ -54,9 +71,11 @@ class PDFProcessor:
                                 f"font-size: {s['size']}px; "
                                 f"color: #{color_hex}; "
                                 f"font-family: sans-serif; "
-                                f"white-space: pre;"
+                                f"white-space: pre; "
+                                f"line-height: 1;"
                             )
                             
+                            # Usamos span com contenteditable para permitir a edição
                             page_html += f'<span contenteditable="true" style="{style}">{s["text"]}</span>'
             
             page_html += '</div>'

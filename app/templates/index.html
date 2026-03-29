@@ -1,44 +1,44 @@
-{% extends "layouts/base.html" %}
+    {% extends "layouts/base.html" %}
 
-{% block content %}
-    <div class="dashboard-top-bar">
-        <button class="theme-switch" onclick="toggleTheme()" title="Mudar Tema">🌙</button>
-    </div>
-
-    <div id="dashboard" class="section">
-        <h1>Sinerg.IA Conversor</h1>
-        <p>A inteligência da Atlética a serviço dos seus arquivos.</p>
-    </div>
-
-    <div id="compress" class="section" style="display:none;">
-        <h1>Otimizar Imagem</h1>
-        <form action="/compress" method="post" enctype="multipart/form-data" onsubmit="return handleConversion(this)">
-            <input type="file" name="file" accept="image/*" required>
-            <button type="submit" class="btn-success">Otimizar Agora</button>
-        </form>
-    </div>
-
-    <div id="scan" class="section" style="display:none;">
-        <h1>Digitalizar para foto</h1>
-        <form action="/scan-pdf" method="post" enctype="multipart/form-data" onsubmit="return handleConversion(this)">
-            <input type="file" name="files" accept="image/*" multiple required>
-            <button type="submit" class="btn-primary">Gerar PDF</button>
-        </form>
-    </div>
-
-    <div id="edit" class="section" style="display:none;">
-        <h1>Editor de PDF Inteligente</h1>
-        <p>Altere textos diretamente no documento original.</p>
-        
-        <div class="editor-controls">
-            <input type="file" id="pdf-input" accept="application/pdf" onchange="processPdfForEdit(this)">
-            <button onclick="downloadEditedPdf()" class="btn-success">🚀 Finalizar e Baixar PDF</button>
+    {% block content %}
+        <div class="dashboard-top-bar">
+            <button class="theme-switch" onclick="toggleTheme()" title="Mudar Tema">🌙</button>
         </div>
 
-        <div class="pdf-editor-viewport">
-            <div id="editable-content" class="editor-paper">
-                <p style="color: #8b949e; text-align: center; margin-top: 50%;">Selecione um PDF para começar a editar...</p>
+        <div id="dashboard" class="section">
+            <h1>Sinerg.IA Conversor</h1>
+            <p>A inteligência da Atlética a serviço dos seus arquivos.</p>
+        </div>
+
+        <div id="compress" class="section" style="display:none;">
+            <h1>Otimizar Imagem</h1>
+            <form action="/compress" method="post" enctype="multipart/form-data" onsubmit="return handleConversion(this)">
+                <input type="file" name="file" accept="image/*" required>
+                <button type="submit" class="btn-success">Otimizar Agora</button>
+            </form>
+        </div>
+
+        <div id="scan" class="section" style="display:none;">
+            <h1>Digitalizar para foto</h1>
+            <form action="/scan-pdf" method="post" enctype="multipart/form-data" onsubmit="return handleConversion(this)">
+                <input type="file" name="files" accept="image/*" multiple required>
+                <button type="submit" class="btn-primary">Gerar PDF</button>
+            </form>
+        </div>
+
+        <div id="edit" class="section" style="display:none;">
+            <h1>Editor de PDF Inteligente</h1>
+            <p>Altere textos diretamente no documento original.</p>
+            
+            <div class="editor-controls">
+                <input type="file" id="pdf-input" accept="application/pdf" onchange="processPdfForEdit(this)">
+                <button onclick="downloadEditedPdf()" class="btn-success">🚀 Finalizar e Baixar PDF</button>
+            </div>
+
+            <div class="pdf-editor-viewport">
+                <div id="editable-content" class="editor-paper">
+                    <p style="color: #8b949e; text-align: center; margin-top: 50%;">Selecione um PDF para começar a editar...</p>
+                </div>
             </div>
         </div>
-    </div>
-{% endblock %}
+    {% endblock %}

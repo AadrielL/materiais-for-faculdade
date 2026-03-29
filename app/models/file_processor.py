@@ -1,6 +1,9 @@
 from PIL import Image
 import os
 import fitz  # PyMuPDF
+import unicodedata
+
+# REMOVA qualquer linha que tente importar ImageProcessor ou PDFProcessor aqui!
 
 class ImageProcessor:
     @staticmethod
@@ -40,7 +43,6 @@ class PDFProcessor:
             height = page.rect.height
             
             # Cada página ganha um ID único e posição relativa
-            # margin-bottom e border ajudam a separar visualmente as páginas na tela
             page_html = (
                 f'<div class="pdf-page-canvas" id="page-{page_num}" style="'
                 f'position: relative; '
@@ -58,25 +60,26 @@ class PDFProcessor:
                 if "lines" in b:
                     for l in b["lines"]:
                         for s in l["spans"]:
+                            # --- CORREÇÃO DE ACENTOS ---
+                            texto_limpo = unicodedata.normalize("NFKC", s["text"])
+                            
                             # Tratamento de cores
                             color_hex = hex(s['color'])[2:].zfill(6)
                             if color_hex == "ffffff": 
-                                color_hex = "333333" # Garante que texto branco não suma no fundo branco
+                                color_hex = "333333"
                             
-                            # O segredo: os 'tops' e 'lefts' agora são relativos à DIV pai (page-canvas)
                             style = (
                                 f"position: absolute; "
                                 f"left: {s['origin'][0]}px; "
                                 f"top: {s['origin'][1]}px; "
                                 f"font-size: {s['size']}px; "
                                 f"color: #{color_hex}; "
-                                f"font-family: sans-serif; "
+                                f"font-family: Arial, sans-serif; "
                                 f"white-space: pre; "
                                 f"line-height: 1;"
                             )
                             
-                            # Usamos span com contenteditable para permitir a edição
-                            page_html += f'<span contenteditable="true" style="{style}">{s["text"]}</span>'
+                            page_html += f'<span contenteditable="true" style="{style}">{texto_limpo}</span>'
             
             page_html += '</div>'
             html_pages += page_html

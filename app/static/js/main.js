@@ -35,6 +35,24 @@ window.toggleTheme = () => {
     if (btn) btn.innerHTML = newTheme === 'light' ? '🌙' : '💡';
 };
 
+// --- FUNÇÃO DE DOWNLOAD GLOBAL ---
+window.downloadEditedPdf = () => {
+    const element = document.getElementById('editable-content');
+    if (!element || element.innerText.includes("Selecione um PDF")) {
+        alert("Nenhum documento carregado.");
+        return;
+    }
+    const opt = {
+        margin: 0,
+        filename: 'documento_editado.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true, letterRendering: true },
+        jsPDF: { unit: 'px', format: 'a4', orientation: 'portrait' },
+        pagebreak: { mode: 'css', before: '.pdf-page-canvas' }
+    };
+    html2pdf().set(opt).from(element).save();
+};
+
 document.addEventListener('DOMContentLoaded', () => {
     // 1. Carregamento de preferências de tema
     const savedTheme = localStorage.getItem('theme') || 'dark';
@@ -73,7 +91,6 @@ document.addEventListener('DOMContentLoaded', () => {
             pageCanvas.appendChild(newText);
             newText.focus();
 
-            // Seleciona o texto automaticamente para facilitar a troca
             const range = document.createRange();
             range.selectNodeContents(newText);
             const sel = window.getSelection();
@@ -116,7 +133,6 @@ document.addEventListener('DOMContentLoaded', () => {
             currentElement.style.cursor = 'move';
             currentElement.style.border = "1px dashed transparent";
             
-            // Se o usuário soltou e o texto está vazio, removemos
             if (currentElement.innerText.trim() === "") {
                 currentElement.remove();
             }

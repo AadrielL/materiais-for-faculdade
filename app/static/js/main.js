@@ -1,6 +1,6 @@
 /**
  * @file main.js
- * @description Orquestrador principal do SaaS Conversor Pro.
+ * @description Orquestrador principal do SaaS Conversor Pro com Editor Avançado.
  */
 
 import { Sidebar } from './modules/sidebar.js';
@@ -10,6 +10,11 @@ import { UIController } from './modules/ui_controller.js';
 const sidebar = new Sidebar();
 const pet = new PetAssistant();
 const ui = new UIController(pet, sidebar);
+
+// Variáveis para controle de arraste (Drag and Drop)
+let isDragging = false;
+let currentElement = null;
+let offset = { x: 0, y: 0 };
 
 // Interface de Comunicação Global
 window.showSection = (id) => ui.showSection(id);
@@ -31,23 +36,16 @@ window.toggleTheme = () => {
 };
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Carregamento de preferências salvas
+    // 1. Carregamento de preferências de tema
     const savedTheme = localStorage.getItem('theme') || 'dark';
     document.documentElement.setAttribute('data-theme', savedTheme);
-    
     const themeBtn = document.querySelector('.theme-switch');
     if (themeBtn) themeBtn.innerHTML = savedTheme === 'light' ? '🌙' : '💡';
 
-    // --- NOVIDADE: FUNÇÃO DE CLIQUE DUPLO PARA ADICIONAR TEXTO ---
-    // Delegamos o evento para o body, mas filtramos apenas para as páginas do PDF
+    // 2. Lógica do Editor: Criar Texto (Clique Duplo)
     document.body.addEventListener('dblclick', (e) => {
-        // Verifica se clicou dentro de uma página ou em algo que já é texto
         const pageCanvas = e.target.closest('.pdf-page-canvas');
-        
-        if (pageCanvas) {
-            // Se clicou em um texto que já existe, não cria outro em cima
-            if (e.target.tagName === 'SPAN') return;
-
+        if (pageCanvas && e.target.tagName !== 'SPAN') {
             const rect = pageCanvas.getBoundingClientRect();
             const x = e.clientX - rect.left;
             const y = e.clientY - rect.top;
@@ -55,33 +53,84 @@ document.addEventListener('DOMContentLoaded', () => {
             const newText = document.createElement('span');
             newText.contentEditable = "true";
             newText.innerText = "Novo Texto"; 
+            newText.className = "editable-pdf-text";
             
-            // Estilo idêntico ao que o Python gera no backend
             Object.assign(newText.style, {
                 position: "absolute",
                 left: `${x}px`,
                 top: `${y}px`,
                 fontSize: "14px",
-                color: "var(--text-color, #333)", // Usa a cor do seu tema
+                color: "var(--text-color, #333)",
                 fontFamily: "sans-serif",
                 whiteSpace: "pre",
-                minWidth: "20px",
                 padding: "2px",
+                cursor: "move",
+                zIndex: "100",
                 outline: "none",
-                zIndex: "100"
+                border: "1px dashed transparent"
             });
-
-            // Feedback visual de que está editando
-            newText.style.border = "1px dashed #4A90E2";
 
             pageCanvas.appendChild(newText);
             newText.focus();
 
-            // Remove a bordinha azul quando perde o foco
-            newText.addEventListener('blur', () => {
-                newText.style.border = "none";
-                if (newText.innerText.trim() === "") newText.remove();
-            });
+            // Seleciona o texto automaticamente para facilitar a troca
+            const range = document.createRange();
+            range.selectNodeContents(newText);
+            const sel = window.getSelection();
+            sel.removeAllRanges();
+            sel.addRange(range);
+        }
+    });
+
+    // 3. Lógica do Editor: Mover Texto (Drag and Drop)
+    document.addEventListener('mousedown', (e) => {
+        if (e.target.tagName === 'SPAN' && e.target.closest('.pdf-page-canvas')) {
+            isDragging = true;
+            currentElement = e.target;
+            
+            const rect = currentElement.getBoundingClientRect();
+            offset.x = e.clientX - rect.left;
+            offset.y = e.clientY - rect.top;
+            
+            currentElement.style.cursor = 'grabbing';
+            currentElement.style.border = "1px dashed #4A90E2";
+        }
+    });
+
+    document.addEventListener('mousemove', (e) => {
+        if (isDragging && currentElement) {
+            const pageCanvas = currentElement.closest('.pdf-page-canvas');
+            const canvasRect = pageCanvas.getBoundingClientRect();
+
+            let newX = e.clientX - canvasRect.left - offset.x;
+            let newY = e.clientY - canvasRect.top - offset.y;
+
+            currentElement.style.left = `${newX}px`;
+            currentElement.style.top = `${newY}px`;
+        }
+    });
+
+    document.addEventListener('mouseup', () => {
+        if (isDragging && currentElement) {
+            isDragging = false;
+            currentElement.style.cursor = 'move';
+            currentElement.style.border = "1px dashed transparent";
+            
+            // Se o usuário soltou e o texto está vazio, removemos
+            if (currentElement.innerText.trim() === "") {
+                currentElement.remove();
+            }
+            currentElement = null;
+        }
+    });
+
+    // 4. Lógica do Editor: Deletar Texto (Backspace/Delete em vazio)
+    document.addEventListener('keydown', (e) => {
+        const active = document.activeElement;
+        if ((e.key === "Delete" || e.key === "Backspace") && 
+            active.tagName === 'SPAN' && 
+            active.innerText.trim() === "") {
+            active.remove();
         }
     });
 

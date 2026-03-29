@@ -1,0 +1,29 @@
+<div id="pet" class="pet-assistant closed">
+    <div class="pet-wrapper">
+        <button class="pet-close" onclick="togglePet()">×</button>
+        
+        <div class="octopus">
+            <div class="octo-head">
+                <div class="eye-wrapper">
+                    <div class="eye"><div class="pupil"></div></div>
+                    <div class="eye"><div class="pupil"></div></div>
+                </div>
+            </div>
+            <div class="tentacles">
+                <div class="tentacle"></div>
+                <div class="tentacle"></div>
+                <div class="tentacle"></div>
+                <div class="tentacle"></div>
+            </div>
+        </div>
+
+        <div class="pet-speech-bubble" id="pet-speech">
+            <p id="pet-message"></p>
+            <div class="bubble-arrow"></div>
+        </div>
+    </div>
+</div>
+
+<button id="pet-summon" class="pet-summon-btn" onclick="togglePet()" style="display: none;">
+    🐙 Chamar ZAPT
+</button>

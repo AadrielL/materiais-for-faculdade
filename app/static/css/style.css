@@ -1,0 +1,366 @@
+/* --- Variáveis de Tema (Cores Frias vs Quentes) --- */
+:root {
+    /* DARK MODE: Cores Frias (Deep Navy / Slate) */
+    --bg-main: #0d1117;        /* Fundo Profundo */
+    --bg-sidebar: #161b22;     /* Sidebar Slate */
+    --bg-section: #1c2128;     /* Card do conteúdo */
+    --text-main: #e6edf3;
+    --text-muted: #8b949e;
+    --accent: #58a6ff;         /* Azul Sinergia */
+    --border: #30363d;
+    --btn-success: #238636;
+    --btn-primary: #1f6feb;
+    --pet-opacity: 0.6;
+    --shadow: rgba(0, 0, 0, 0.5);
+}
+
+[data-theme="light"] {
+    /* LIGHT MODE: Cores Quentes (Sand / Cream) */
+    --bg-main: #fdfaf6;        /* Creme Suave */
+    --bg-sidebar: #f4eee4;     /* Areia Quente */
+    --bg-section: #ffffff;     /* Card Branco Puro */
+    --text-main: #3e362e;      /* Marrom Escuro */
+    --text-muted: #7d6e5d;     /* Sépia */
+    --accent: #d4a373;         /* Bronze / Ouro Velho */
+    --border: #e6ddd0;
+    --btn-success: #606c38;
+    --btn-primary: #283618;
+    --pet-opacity: 0.3;
+    --shadow: rgba(0, 0, 0, 0.08);
+}
+
+/* --- Base do Sistema --- */
+body { 
+    display: flex; 
+    font-family: 'Inter', 'Segoe UI', system-ui, sans-serif; 
+    margin: 0; 
+    background-color: var(--bg-main); 
+    color: var(--text-main);
+    transition: background 0.4s ease, color 0.4s ease;
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+/* --- Sidebar Profissional --- */
+.sidebar { 
+    width: 260px; 
+    height: 100vh; 
+    background: var(--bg-sidebar); 
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: 1000;
+    border-right: 1px solid var(--border);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    padding: 100px 15px 20px;
+    box-sizing: border-box;
+    box-shadow: 4px 0 15px var(--shadow);
+}
+
+.sidebar h2 { 
+    color: var(--accent); 
+    text-align: center; 
+    margin-bottom: 40px; 
+    font-size: 1.2rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.sidebar a { 
+    display: flex;
+    align-items: center;
+    color: var(--text-muted); 
+    padding: 14px 18px; 
+    text-decoration: none; 
+    border-radius: 10px;
+    margin-bottom: 5px;
+    transition: all 0.2s ease;
+    font-weight: 500;
+}
+
+.sidebar a:hover { 
+    background: var(--bg-section); 
+    color: var(--accent);
+    transform: translateX(5px);
+}
+
+/* --- Área de Conteúdo --- */
+.content { 
+    flex: 1; 
+    margin-left: 260px; 
+    padding: 80px 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center; 
+    align-items: center;     
+    min-height: 100vh;
+    position: relative;
+    box-sizing: border-box;
+}
+
+.dashboard-top-bar {
+    position: fixed;
+    top: 30px;
+    right: 30px;
+    z-index: 1100;
+}
+
+.theme-switch {
+    background: var(--bg-section);
+    border: 1px solid var(--border);
+    color: var(--accent);
+    width: 42px;
+    height: 42px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 10px var(--shadow);
+    transition: 0.3s;
+}
+
+.section {
+    max-width: 600px;
+    width: 100%;
+    background: var(--bg-section);
+    padding: 40px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    box-shadow: 0 20px 40px var(--shadow);
+    text-align: center;
+    position: relative;
+    z-index: 60;
+}
+
+/* --- O ASSISTENTE FLUTUANTE ZAPT (Sinerg.IA) --- */
+.pet-assistant {
+    position: fixed;
+    z-index: 1050; 
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    pointer-events: none;
+    transition: all 1.6s cubic-bezier(0.45, 0.05, 0.55, 0.95), opacity 0.3s;
+}
+
+/* --- COORDENADAS DOS 4 PONTOS NEUTROS --- */
+.pet-pos-dashboard { 
+    top: 120px; 
+    left: 310px; 
+    bottom: auto; 
+    right: auto;
+}
+
+.pet-pos-compress { 
+    top: 120px; 
+    right: 40px; 
+    left: auto; 
+    bottom: auto;
+}
+
+.pet-pos-scan { 
+    bottom: 40px; 
+    left: 310px; 
+    top: auto; 
+    right: auto;
+}
+
+.pet-pos-edit { 
+    bottom: 40px; 
+    right: 40px; 
+    top: auto; 
+    left: auto;
+}
+
+.pet-invert-bubble .pet-speech-bubble {
+    right: auto;
+    left: 110px;
+    border-radius: 15px 15px 15px 0;
+}
+.pet-invert-bubble .bubble-arrow {
+    right: auto;
+    left: 20px;
+}
+
+.pet-assistant.closed {
+    transform: translateY(100px) scale(0);
+    opacity: 0;
+}
+
+.pet-wrapper {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    pointer-events: auto;
+}
+
+.pet-close {
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    background: #e74c3c;
+    color: white;
+    border: none;
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    z-index: 2010;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.octopus {
+    position: relative;
+    width: 100px;
+    height: 120px;
+    background: linear-gradient(135deg, var(--accent), #2c3e50);
+    border-radius: 50% 50% 45% 45%;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    filter: drop-shadow(0 0 15px var(--accent));
+    animation: floatPassenger 4s infinite ease-in-out;
+}
+
+@keyframes floatPassenger {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-15px) rotate(2deg); }
+}
+
+.eye-wrapper { position: absolute; top: 35px; width: 100%; display: flex; justify-content: space-around; padding: 0 15px; box-sizing: border-box; }
+.eye { width: 22px; height: 22px; background: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 10px #fff; }
+.pupil { width: 10px; height: 10px; background: #000; border-radius: 50%; }
+
+.tentacles { position: absolute; bottom: -15px; width: 100%; display: flex; justify-content: center; gap: 8px; }
+.tentacle { width: 12px; height: 35px; background: var(--accent); border-radius: 0 0 12px 12px; animation: wave 2s infinite ease-in-out; }
+.tentacle:nth-child(even) { animation-delay: 0.3s; }
+
+@keyframes wave { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(8px); } }
+
+.pet-speech-bubble {
+    position: absolute;
+    bottom: 140px;
+    right: 0;
+    width: 240px;
+    max-width: 70vw;
+    background: var(--bg-sidebar);
+    color: var(--text-main);
+    padding: 15px 20px;
+    border-radius: 15px 15px 0 15px;
+    border: 1px solid var(--border);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.4s ease, transform 0.4s ease;
+    pointer-events: auto;
+    word-wrap: break-word;
+}
+
+.pet-speech-bubble.active {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.bubble-arrow {
+    position: absolute;
+    bottom: -10px;
+    right: 20px;
+    width: 0; height: 0;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-top: 10px solid var(--border);
+}
+
+.pet-summon-btn {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1999;
+    background: var(--bg-sidebar);
+    color: var(--accent);
+    border: 1px solid var(--border);
+    padding: 10px 20px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-weight: bold;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    transition: 0.3s;
+}
+
+/* --- ÁREA DO EDITOR --- */
+.pdf-editor-viewport {
+    width: 100%;
+    max-height: 70vh;
+    overflow-y: auto;
+    background: #0d1117;
+    margin-top: 20px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    padding: 40px 10px;
+    box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
+}
+
+.editor-paper {
+    background: white;
+    color: #1f2328;
+    width: 210mm; 
+    min-height: 297mm;
+    padding: 20mm;
+    margin: 0 auto;
+    border-radius: 4px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    text-align: left;
+    position: relative;
+    outline: none;
+}
+
+#editable-content [contenteditable="true"]:focus {
+    background: white;
+    border: 1px solid var(--accent);
+    color: black !important;
+    outline: none;
+    box-shadow: 0 0 10px rgba(88, 166, 255, 0.2);
+}
+
+.editor-controls {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    background: var(--bg-sidebar);
+    padding: 15px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+}
+
+/* --- LÓGICA DE IMPRESSÃO (ZAPT PRINT) --- */
+@media print {
+    body *, .sidebar, .dashboard-top-bar, .editor-controls, .pet-assistant, .pet-summon-btn, .section h1, .section p {
+        display: none !important;
+    }
+    .content, #edit, .pdf-editor-viewport, .editor-paper, #editable-content, #editable-content * {
+        display: block !important;
+        visibility: visible !important;
+        position: static !important;
+    }
+    @page { margin: 0; size: auto; }
+    .content { margin: 0 !important; padding: 0 !important; width: 100% !important; }
+    .editor-paper {
+        box-shadow: none !important;
+        border: none !important;
+        width: 210mm !important;
+        height: auto !important;
+        padding: 0 !important;
+        margin: 0 auto !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .content { margin-left: 0; padding: 100px 20px; }
+    .sidebar { width: 100%; z-index: 1100; }
+}

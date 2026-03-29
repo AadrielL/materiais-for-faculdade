@@ -1,5 +1,5 @@
 import os
-import uuid  # Para gerar nomes únicos
+import uuid
 from flask import Blueprint, send_file, request, current_app, after_this_request
 from app.models.file_processor import ImageProcessor, PDFProcessor
 
@@ -27,7 +27,6 @@ def compress():
     if not file: return "Nenhum arquivo enviado", 400
 
     path = get_upload_dir()
-    # Gera um nome único para evitar que um aluno sobrescreva o outro
     unique_id = str(uuid.uuid4())
     input_p = os.path.join(path, f"{unique_id}_{file.filename}")
     output_p = os.path.join(path, f"otimizado_{unique_id}_{file.filename}")
@@ -35,7 +34,6 @@ def compress():
     file.save(input_p)
     ImageProcessor.compress_image(input_p, output_p)
 
-    # Deleta os arquivos do servidor DEPOIS que o download terminar
     @after_this_request
     def remove_file(response):
         cleanup_files(input_p, output_p)
@@ -79,7 +77,6 @@ def convert_to_edit():
 
     try:
         html_content = PDFProcessor.pdf_to_html_edit(input_p)
-        # Como o HTML é retornado como texto, podemos deletar o PDF na hora
         cleanup_files(input_p)
         return {"html": html_content}
     except Exception as e:

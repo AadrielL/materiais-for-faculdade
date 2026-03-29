@@ -272,7 +272,7 @@ body {
     transition: 0.3s;
 }
 
-//* --- ÁREA DO EDITOR (CORRIGIDA) --- */
+/* --- ÁREA DO EDITOR (CORRIGIDA) --- */
 .pdf-editor-viewport {
     width: 100%;
     max-height: 80vh;
@@ -289,23 +289,66 @@ body {
 }
 
 .editor-paper {
-    background: transparent; /* Deixa o branco das páginas do Python aparecer */
+    background: transparent;
     width: fit-content; 
     margin: 0 auto;
     position: relative;
     outline: none;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
 }
 
-/* Estilo para os blocos de texto individuais */
+/* --- FOLHA DE RESPOSTAS (GRADE DE 2 COLUNAS) --- */
+.extra-answer-page {
+    position: relative;
+    width: 595px; /* A4 em px */
+    min-height: 842px;
+    background: white;
+    margin: 20px auto;
+    padding: 30px;
+    border: 1px solid #ccc;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* Duas colunas */
+    grid-auto-rows: min-content; 
+    gap: 15px;
+    box-sizing: border-box;
+}
+
+.truth-table-wrapper {
+    border: 1px solid #eee;
+    padding: 10px;
+    background: #fff;
+}
+
+#editable-content table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 11px;
+    color: black;
+}
+
+#editable-content table td, #editable-content table th {
+    border: 1px solid #333;
+    padding: 4px;
+    text-align: center;
+}
+
+#editable-content table td:focus {
+    background: #e6f3ff;
+    outline: 2px solid var(--accent);
+}
+
 #editable-content span {
     display: inline-block;
     line-height: 1.1;
     cursor: move;
-    transition: background 0.2s;
 }
 
 #editable-content [contenteditable="true"]:focus {
-    background: rgba(255, 255, 255, 0.9) ;
+    background: rgba(255, 255, 255, 0.9);
     border: 1px solid var(--accent);
     color: black;
     outline: none;
@@ -315,7 +358,8 @@ body {
 
 .editor-controls {
     display: flex;
-    gap: 15px;
+    gap: 10px;
+    flex-wrap: wrap;
     justify-content: center;
     background: var(--bg-sidebar);
     padding: 15px;
@@ -327,5 +371,5 @@ body {
 @media (max-width: 768px) {
     .content { margin-left: 0; padding: 100px 20px; }
     .sidebar { width: 100%; z-index: 1100; }
-    .pdf-editor-viewport { padding: 5px; }
+    .extra-answer-page { width: 95%; grid-template-columns: 1fr; }
 }

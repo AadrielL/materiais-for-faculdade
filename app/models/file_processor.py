@@ -33,24 +33,25 @@ class PDFProcessor:
 
     @staticmethod
     def pdf_to_html_edit(pdf_path):
-        """Desconstrói o PDF para exibição editável organizada por páginas."""
+        """Desconstrói o PDF com correção de fonte fantasma (solda de acentos)."""
         doc = fitz.open(pdf_path)
         html_pages = ""
         
+        # Mapa de correção para fontes "fantasmas" (comum em LaTeX/UFT)
+        correcoes = {
+            "˜ao": "ão", "˜aes": "ães", "¸c": "ç", "˜a": "ã", "˜o": "õ",
+            "´o": "ó", "´a": "á", "´e": "é", "´ı": "í", "´u": "ú",
+            "ˆe": "ê", "ˆa": "â", "ˆo": "ô", "`a": "à"
+        }
+        
         for page_num, page in enumerate(doc):
-            # Obtemos as dimensões da página para o contêiner
             width = page.rect.width
             height = page.rect.height
             
-            # Cada página ganha um ID único e posição relativa
             page_html = (
                 f'<div class="pdf-page-canvas" id="page-{page_num}" style="'
-                f'position: relative; '
-                f'width: {width}px; '
-                f'height: {height}px; '
-                f'background: white; '
-                f'margin: 20px auto; '
-                f'border: 1px solid #ccc; '
+                f'position: relative; width: {width}px; height: {height}px; '
+                f'background: white; margin: 20px auto; border: 1px solid #ccc; '
                 f'box-shadow: 0 4px 8px rgba(0,0,0,0.1);">'
             )
             
@@ -60,10 +61,14 @@ class PDFProcessor:
                 if "lines" in b:
                     for l in b["lines"]:
                         for s in l["spans"]:
-                            # --- CORREÇÃO DE ACENTOS ---
-                            texto_limpo = unicodedata.normalize("NFKC", s["text"])
+                            # 1. Normalização Unicode para tentar juntar caracteres
+                            texto = unicodedata.normalize("NFKC", s["text"])
                             
-                            # Tratamento de cores
+                            # 2. Correção Manual de "Fonte Fantasma" (Solda dos acentos LaTeX)
+                            for erro, correto in correcoes.items():
+                                if erro in texto:
+                                    texto = texto.replace(erro, correto)
+                            
                             color_hex = hex(s['color'])[2:].zfill(6)
                             if color_hex == "ffffff": 
                                 color_hex = "333333"
@@ -79,7 +84,7 @@ class PDFProcessor:
                                 f"line-height: 1;"
                             )
                             
-                            page_html += f'<span contenteditable="true" style="{style}">{texto_limpo}</span>'
+                            page_html += f'<span contenteditable="true" style="{style}">{texto}</span>'
             
             page_html += '</div>'
             html_pages += page_html

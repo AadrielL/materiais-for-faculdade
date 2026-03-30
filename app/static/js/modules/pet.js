@@ -1,6 +1,7 @@
 /**
  * @class PetAssistant
  * @description Controla o comportamento do assistente ZAPT (Mascote 100% CSS).
+ * Gerencia diálogos dinâmicos, animações de nado e acompanhamento ocular.
  */
 export class PetAssistant {
     constructor() {
@@ -10,33 +11,40 @@ export class PetAssistant {
         this.messageEl = document.getElementById('pet-message');
         this.pupils = document.querySelectorAll('.pupil');
         
+        // --- DIÁLOGOS ATUALIZADOS PARA O NOVO MOTOR ---
         this.dialogs = {
-            'welcome': 'Olá! Sou o ZAPT. Preparado para otimizar seus arquivos? 🐙',
-            'dashboard': 'No Dashboard você vê o resumo do sistema. Escolha uma ferramenta no menu lateral!',
-            'compress': 'A ferramenta Comprimir reduz o peso (KB) das imagens sem perder a qualidade cibernética!',
-            'scan': 'Em Digitalizar, eu agrupo suas fotos em um PDF único e profissional para você.',
-            'edit': 'No Editor, você pode carregar um PDF e escrever por cima dele. Ótimo para assinar documentos! ✍️🐙',
-            'pdf-loaded': 'PDF carregado! Clique em "Adicionar Texto" e depois clique na folha para escrever.',
-            'edit-start': 'Segura aí! Estou desconstruindo os pixels desse PDF para deixar tudo editável para você... 🐙⚡',
-            'edit-ready': 'Prontinho! O arquivo agora é seu. Pode apagar, escrever ou mudar o que quiser direto na folha! ✍️',
-            'celebrate': 'YAY! Sinerg.IA em ação! Seu arquivo foi processado com sucesso! 🎉',
-            'error': 'Ops! Algo deu errado no processamento. Tente novamente, humano.'
+            'welcome': 'Olá, sou o ZAPT! 🐙 Pronto para dar vida nova aos seus documentos com a Sinerg.IA?',
+            'dashboard': 'Aqui é o centro de comando. Escolha uma ferramenta para começarmos a mágica!',
+            'compress': 'A compressão reduz o peso dos arquivos sem quebrar os pixels. Qualidade pura! ⚡',
+            'scan': 'Vou agrupar suas imagens em um PDF único, limpo e profissional. Pode mandar as fotos!',
+            'edit': 'Este é o Editor Inteligente. Diferente de outros, eu não apenas anoto: eu reconstruo o texto para você mudar o que quiser! ✍️',
+            'pdf-loaded': 'Consegui! O PDF foi desconstruído. Agora você pode clicar em qualquer linha para apagar, reescrever ou formatar.',
+            'edit-start': 'Segura a onda! Estou usando IA para ler esses pixels e transformar o PDF em um documento editável de verdade... 🐙🧠',
+            'edit-ready': 'Feito! Agora o documento é fluxo vivo. Pode editar o texto, mudar fontes ou adicionar tabelas da verdade no final! 📄✨',
+            'celebrate': 'XABLAU! Sinerg.IA em ação! Processamento concluído com sucesso. Ficou perfeito! 🎉',
+            'error': 'Ops! Ocorreu um erro na matriz. Verifique o arquivo e tente novamente, humano.'
         };
 
         this.init();
     }
 
     init() {
+        // Movimento dos olhos seguindo o cursor
         document.addEventListener('mousemove', (e) => this.followMouse(e));
         
-        // Inicia imediatamente na posição do Dashboard
+        // Inicia na posição do Dashboard com um delay suave
         setTimeout(() => {
-            this.el.classList.add('pet-pos-dashboard');
-            this.toggle(true);
-            this.speak('welcome');
+            if (this.el) {
+                this.el.classList.add('pet-pos-dashboard');
+                this.toggle(true);
+                this.speak('welcome');
+            }
         }, 800);
     }
 
+    /**
+     * Faz as pupilas do ZAPT seguirem o movimento do mouse para dar vida ao mascote.
+     */
     followMouse(e) {
         if (!this.el || this.el.classList.contains('closed')) return;
 
@@ -50,17 +58,20 @@ export class PetAssistant {
         });
     }
 
+    /**
+     * Faz o ZAPT falar. O balão só aparece após o término do "nado" (transição CSS).
+     * @param {string} key - Chave do diálogo ou texto personalizado.
+     */
     speak(key) {
         if (!this.speechBubble || !this.messageEl) return;
 
         const msg = this.dialogs[key] || key;
         
-        // 1. Esconde o balão enquanto a lula nada
+        // 1. Esconde o balão enquanto o ZAPT se desloca
         this.speechBubble.classList.remove('active');
 
-        // 2. Função para mostrar o balão após o nado
         const showBubble = () => {
-            // Checa se a lula parou no lado esquerdo (perto da sidebar)
+            // Lógica de inversão: se o ZAPT estiver muito à esquerda, inverte o balão para não cortar na tela
             const rect = this.el.getBoundingClientRect();
             if (rect.left < 450) {
                 this.el.classList.add('pet-invert-bubble');
@@ -71,24 +82,28 @@ export class PetAssistant {
             this.messageEl.innerText = msg;
             this.speechBubble.classList.add('active');
             
-            // Limpa o escutador para não duplicar
+            // Remove o listener para evitar execuções duplicadas
             this.el.removeEventListener('transitionend', showBubble);
         };
 
-        // 3. Escuta o fim da transição CSS para disparar o balão
+        // 2. Escuta o fim do movimento (nado) para falar
         this.el.addEventListener('transitionend', showBubble);
 
-        // Fallback: se ela já estiver no lugar, dispara em 200ms
+        // Fallback: Se o ZAPT já estiver na posição, dispara a fala em breve
         setTimeout(() => {
             if (!this.speechBubble.classList.contains('active')) showBubble();
-        }, 1700);
+        }, 1850);
 
+        // Auto-hide: O balão some após 8 segundos para não poluir a tela
         if (this.speechTimeout) clearTimeout(this.speechTimeout);
         this.speechTimeout = setTimeout(() => {
             this.speechBubble.classList.remove('active');
         }, 8000);
     }
 
+    /**
+     * Alterna a visibilidade do assistente.
+     */
     toggle(force = null) {
         if (!this.el) return;
         const isClosed = this.el.classList.contains('closed');
@@ -104,9 +119,14 @@ export class PetAssistant {
         }
     }
 
+    /**
+     * Aciona a animação de comemoração e fala de sucesso.
+     */
     celebrate() {
         this.speak('celebrate');
         this.el.classList.add('celebrating');
-        setTimeout(() => this.el.classList.remove('celebrating'), 3500);
+        setTimeout(() => {
+            if (this.el) this.el.classList.remove('celebrating');
+        }, 3500);
     }
 }

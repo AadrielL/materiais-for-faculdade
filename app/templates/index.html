@@ -30,11 +30,16 @@
         <h1>Editor de PDF Inteligente</h1>
         <p>Altere textos e adicione tabelas verdade.</p>
         
-        <div class="editor-controls">
+        <div class="editor-controls" style="display: flex; gap: 10px; align-items: center; justify-content: center;">
             <input type="file" id="pdf-input" accept="application/pdf" onchange="processPdfForEdit(this)">
+            
+            <button onclick="addNewSpace()" class="btn-tool" style="display: inline-block !important; visibility: visible !important;">
+                ➕ Texto/Espaço
+            </button>
+
             <button onclick="addTruthTablePage(4)" class="btn-primary">➕ Tabela 4</button>
             <button onclick="addTruthTablePage(8)" class="btn-primary">➕ Tabela 8</button>
-            <button onclick="downloadEditedPdf()" class="btn-success">🚀 Finalizar e Baixar PDF</button>
+            <button onclick="downloadEditedPdf()" class="btn-success">🚀 Baixar PDF</button>
         </div>
 
         <div class="pdf-editor-viewport">
